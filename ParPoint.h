@@ -7,13 +7,17 @@ class ParPoint
 {
 
 private:
+	
 
 	//Window, desktop, background variables
-	sf::RenderWindow* window;
 	sf::Vector2f desktopResolution;
+	sf::RenderWindow* window;
 	sf::VideoMode windowSize;
 	sf::RectangleShape* background;
 	sf::Texture* backgroundTexture;
+
+	//Mouse variables
+	sf::Vector2i mousePos;
 
 	//Title variables
 	sf::Font titleFont;
@@ -42,6 +46,7 @@ public:
 	void updateEvents();
 
 	void update();
+	void updateMouseClick(sf::Mouse::Button buttonClicked);
 	void render();
 
 };
