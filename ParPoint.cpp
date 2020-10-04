@@ -2,26 +2,26 @@
 #include <iostream>
 #include <string>
 
+
+ParPoint::ParPoint()
+{
+	initializeVariables();
+	createWindowAndBackground();
+	createMainMenuButtons();
+	createTitle();
+}
 ParPoint::~ParPoint()
 {
 	delete this->window;
 	delete this->background;
 	delete this->backgroundTexture;
 }
-ParPoint::ParPoint()
-{
-	initializeVariables();
-	createWindowAndBackground();
-	createButtons();
-	createTitle();
-}
-
 
 void ParPoint::initializeVariables()
 {
 	//Get user's desktop resolution
 	this->desktopResolution = sf::Vector2f(sf::VideoMode::getDesktopMode().width,
-											sf::VideoMode::getDesktopMode().height);
+										   sf::VideoMode::getDesktopMode().height);
 
 	//Set window and background pointers to null, set windowsize
 	this->window = nullptr;
@@ -36,6 +36,9 @@ void ParPoint::initializeVariables()
 
 	//Initialize title font/text
 	//this->titleFont.
+	if (!this->titleFont.loadFromFile("Resources/Fonts/AlexBrush-Regular.ttf"))
+		std::cout << "error loading button font";
+	else this->titleText.setFont(titleFont);
 	this->titleText.setString("titleText placeholder");
 
 	//Initialize buttons
@@ -67,21 +70,28 @@ void ParPoint::createWindowAndBackground()
 		
 }
 
-void ParPoint::createButtons()
+void ParPoint::createMainMenuButtons()
 {
 	//Par Point button
 	this->parpointButton = new Button(sf::Color::Red, "ParPoint",
 					sf::Vector2f(windowSize.width / 2.f, windowSize.height * .65f),
 					false);
 
-	//Handicap report upload button, includes textbox
-	this->hcpUploadButton = new Button(sf::Color::Red, "Update Handicap Report",
-		sf::Vector2f(windowSize.width / 2.f, windowSize.height * .725f), true);
-
 	//Settings button
 	this->settingsButton = new Button(sf::Color::Red, "Settings",
-					sf::Vector2f(windowSize.width / 2.f, windowSize.height * .8f),
-					false);
+		sf::Vector2f(windowSize.width / 2.f, windowSize.height * .8f),
+		false);
+
+	//Handicap report upload button, includes textbox
+	this->hcpUploadButton = new Button(sf::Color::Red, "Update Handicap Report",
+		sf::Vector2f(windowSize.width / 2.f, windowSize.height * .725f), false);
+
+	this->hcpFilebrowseButton = new Button(sf::Color::Green, "",
+		sf::Vector2f(hcpUploadButton->getPosition().x + (hcpUploadButton->getGlobalBounds().width / 2.f) 
+				   , windowSize.height * .725f)
+				   , true);
+	
+	
 
 }
 
@@ -89,11 +99,7 @@ void ParPoint::createButtons()
 //Creates main menu title text
 void ParPoint::createTitle()
 {
-	if (!this->titleFont.loadFromFile("Resources/Fonts/AlexBrush-Regular.ttf"))
-	{
-		std::cout << "error loading button font";
-	}
-	this->titleText.setFont(titleFont);
+	
 	this->titleText.setCharacterSize(110);
 	this->titleText.setString("Hamilton Mill \n  Par Point");
 	this->titleText.setFillColor(sf::Color::White);
@@ -130,13 +136,20 @@ void ParPoint::updateEvents()
 		//window resize event
 		case sf::Event::Resized:
 			printf("New window width: %i New window height: %i\n",
-				this->event.size.width, this->event.size.height);
+				   this->event.size.width, this->event.size.height);
 			break;
 
 		//Mouse clicked event
 		case sf::Event::MouseButtonPressed:
 			this->mousePos = sf::Mouse::getPosition(*window);
 			std::cout << mousePos.x << ", " << mousePos.y << std::endl;
+
+			if (event.mouseButton.button == sf::Mouse::Left)
+				this->updateMouseClick('L');
+			else if (event.mouseButton.button == sf::Mouse::Right)
+				this->updateMouseClick('R');
+
+
 			this->updateMouseClick(event.mouseButton.button);
 			break;
 
@@ -151,53 +164,43 @@ void ParPoint::update()
 
 }
 
-void ParPoint::updateMouseClick(sf::Mouse::Button buttonClicked)
+void ParPoint::updateMouseClick(char mButtonClicked)
 {
-	// For "isClicked()": 0 returned means no click					  
-	//					   1 returned means button click				  
-	//					   2 returned means browse file button clicked 
-
-
 	//Check if ParPoint button was clicked
-	if (this->parpointButton->isClicked(this->mousePos) == 1)
+	if (this->parpointButton->isClicked(this->mousePos))
 	{
-		if (buttonClicked == sf::Mouse::Left)
-		{
+		if (mButtonClicked == 'L')
 			std::cout << "Left click on ParPoint button" << std::endl;
-		}
-		else if (buttonClicked == sf::Mouse::Right) 
+		else if (mButtonClicked == 'R')
 			std::cout << "Right click on ParPoint button" << std::endl;
 	}
 
 	//Check if Settings button was clicked
-	 else if (this->settingsButton->isClicked(mousePos) == 1)
+	 else if (this->settingsButton->isClicked(mousePos))
 	{
-		if (buttonClicked == sf::Mouse::Left)
-		{
+		if (mButtonClicked == 'L')
 			std::cout << "Left click on Settings button" << std::endl;
-		}
-		else if (buttonClicked == sf::Mouse::Right) 
+		else if (mButtonClicked == 'R')
 			std::cout << "Right click on Settings button" << std::endl;
 	}
 
 	//Check if upload button is clicked
-	else if (this->hcpUploadButton->isClicked(mousePos) == 1)
+	else if (this->hcpUploadButton->isClicked(mousePos))
 	{
-		if (buttonClicked == sf::Mouse::Left)
-		{
+		if (mButtonClicked == 'L')
 			std::cout << "Left click on Handicap-Upload button" << std::endl;
-		}
-		else if (buttonClicked == sf::Mouse::Right) 
+		else if (mButtonClicked == 'R')
 			std::cout << "Right click on Handicap-Upload button" << std::endl;
 	}
 	//Check if handicap texbox or browse button clicked
-	else if (this->hcpUploadButton->isClicked(mousePos) == 2)
+	else if (this->hcpFilebrowseButton->isClicked(mousePos))
 	{
-		if (buttonClicked == sf::Mouse::Left)
+		if (mButtonClicked == 'L')
 		{
-			std::cout << "Left click on Handicap textbox or browse button" << std::endl;
+			std::cout << "Left click on file browse button" << std::endl;
+
 		}
-		else if(buttonClicked == sf::Mouse::Right) 
+		else if (mButtonClicked == 'R')
 			std::cout << "Right click on Handicap textbox or browse button" << std::endl;
 	}
 
@@ -211,6 +214,7 @@ void ParPoint::render()
 	this->window->draw(titleText);
 	this->parpointButton->drawButton(window);
 	this->hcpUploadButton->drawButton(window);
+	this->hcpFilebrowseButton->drawButton(window);
 	this->settingsButton->drawButton(window);
 
 	this->window->display();

@@ -26,7 +26,11 @@ private:
 	//Button variables
 	Button* parpointButton;
 	Button* hcpUploadButton;
+	Button* hcpFilebrowseButton;
 	Button* settingsButton;
+
+	//File variables
+	std::string hcpReportFilepath;
 
 
 	//Clock and event variables
@@ -40,13 +44,13 @@ public:
 
 	void initializeVariables();
 	void createWindowAndBackground();
-	void createButtons();
+	void createMainMenuButtons();
 	void createTitle();
 	void run();
 	void updateEvents();
 
 	void update();
-	void updateMouseClick(sf::Mouse::Button buttonClicked);
+	void updateMouseClick(char mButtonClicked);
 	void render();
 
 };
